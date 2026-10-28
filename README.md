@@ -1,38 +1,32 @@
-# ConectaPro (conectapro)
+# React + TypeScript + Vite
 
-## Install the dependencies
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-```bash
-pnpm install
-# or: yarn/npm/bun install
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
 ```
 
-### Start the app in development mode (HMR, error reporting, etc.)
-
-```bash
-quasar dev
-```
-
-### Format & Lint the files
-
-```bash
-pnpm run lint
-# or: yarn/npm/bun run lint
-```
-
-...or just check formatting & linting:
-
-```bash
-pnpm run lint:check
-# or: yarn/npm/bun run lint:check
-```
-
-### Build the app for production
-
-```bash
-quasar build
-```
-
-### Customize the configuration
-
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-file).
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
