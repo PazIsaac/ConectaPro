@@ -1,0 +1,256 @@
+
+.login-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  min-height: 100vh;
+  background: #fff;
+  color: #172d3c;
+}
+
+.login-panel {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 34px clamp(24px, 6vw, 76px) 42px;
+}
+
+.login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #172d3c;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+
+.login-brand-icon {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  color: #fff;
+  background: #087f8c;
+}
+
+.login-brand > span:last-child > span {
+  color: #087f8c;
+}
+
+.login-heading {
+  margin: 75px 0 34px;
+}
+
+.login-kicker {
+  color: #087f8c;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.login-heading h1 {
+  margin: 12px 0 10px;
+  color: #172d3c;
+  font-size: clamp(31px, 4vw, 40px);
+  letter-spacing: -1.5px;
+}
+
+.login-heading p {
+  max-width: 410px;
+  margin: 0;
+  color: #71828c;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.login-form {
+  display: grid;
+  gap: 22px;
+}
+
+.login-label {
+  display: grid;
+  gap: 8px;
+  color: #304654;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.login-label input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 13px;
+  border: 1px solid #dfe7eb;
+  border-radius: 9px;
+  outline: none;
+  color: #243c4b;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.login-label input::placeholder {
+  color: #9aa7ae;
+}
+
+.login-label input:focus {
+  border-color: #087f8c;
+  box-shadow: 0 0 0 3px #087f8c15;
+}
+
+.login-mensaje {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #cde9e5;
+  border-radius: 9px;
+  color: #086b70;
+  background: #f0faf8;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.login-submit {
+  min-height: 48px;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: #087f8c;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-submit:hover {
+  background: #066c77;
+}
+
+.login-register {
+  margin: 0;
+  color: #7a8b94;
+  font-size: 12px;
+  text-align: center;
+}
+
+.login-register a {
+  color: #087f8c;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.login-back {
+  justify-self: center;
+  padding: 5px 10px;
+  border: 0;
+  color: #607783;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.login-back:hover {
+  color: #087f8c;
+}
+
+.login-aside {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  padding: 60px;
+  background:
+    radial-gradient(circle at 80% 15%, #ffffff16 0, transparent 28%),
+    radial-gradient(circle at 12% 90%, #ffffff12 0, transparent 33%),
+    #087783;
+  color: #fff;
+}
+
+.login-aside-content {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-aside-symbol {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 1px solid #ffffff40;
+  border-radius: 23px;
+  color: #087783;
+  background: #fff;
+  font-size: 43px;
+  font-weight: 800;
+  box-shadow: 0 15px 35px #003c4233;
+}
+
+.login-aside h2 {
+  max-width: 400px;
+  margin: 31px 0 18px;
+  font-size: clamp(30px, 3.6vw, 45px);
+  line-height: 1.15;
+  letter-spacing: -1.7px;
+}
+
+.login-aside-content > p {
+  max-width: 380px;
+  color: #e0f1f1;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.login-aside-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+  padding: 13px 15px;
+  border: 1px solid #ffffff35;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+}
+
+.login-aside-tag span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #087783;
+  background: #fff;
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-panel {
+    max-width: 580px;
+    padding: 27px 24px 42px;
+  }
+
+  .login-heading {
+    margin-top: 48px;
+  }
+
+  .login-aside {
+    min-height: auto;
+    padding: 45px 28px;
+  }
+
+  .login-aside-symbol {
+    width: 58px;
+    height: 58px;
+    border-radius: 17px;
+    font-size: 32px;
+  }
+
+  .login-aside h2 {
+    margin-top: 22px;
+    font-size: 32px;
+  }
+}

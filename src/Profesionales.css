@@ -1,0 +1,765 @@
+/* Estilos completos de Explorar servicios - ConectaPro */
+
+:root {
+  --prof-color-principal: #18796e;
+  --prof-color-principal-oscuro: #145e56;
+  --prof-color-texto: #173b38;
+  --prof-color-secundario: #647873;
+  --prof-color-borde: #dce9e5;
+  --prof-color-fondo: #f5f9f7;
+  --prof-color-acento: #eaf7f1;
+}
+
+/* Página general */
+.profesionales-page {
+  min-height: 100vh;
+  padding: 0 0 56px;
+  background: var(--prof-color-fondo);
+  color: var(--prof-color-texto);
+  font-family: inherit;
+}
+
+.profesionales-page *,
+.profesionales-page *::before,
+.profesionales-page *::after {
+  box-sizing: border-box;
+}
+
+.profesionales-page button,
+.profesionales-page input,
+.profesionales-page select,
+.profesionales-page textarea {
+  font: inherit;
+}
+
+/* Barra superior */
+.profesionales-navbar {
+  width: 100%;
+  min-height: 76px;
+  padding: 16px clamp(20px, 5vw, 72px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--prof-color-borde);
+}
+
+.profesionales-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--prof-color-texto);
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profesionales-brand > span:last-child > span {
+  color: var(--prof-color-principal);
+}
+
+.profesionales-brand-icon {
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--prof-color-principal);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.profesionales-volver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--prof-color-texto);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.profesionales-volver:hover {
+  background: #f0f7f4;
+  border-color: #b7d4cb;
+}
+
+/* Presentación y buscador */
+.profesionales-hero {
+  padding: 58px 20px 38px;
+  text-align: center;
+  background: linear-gradient(180deg, #eaf7f1 0%, var(--prof-color-fondo) 100%);
+}
+
+.profesionales-kicker {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: var(--prof-color-principal);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.profesionales-hero h1 {
+  margin: 0;
+  color: var(--prof-color-texto);
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.profesionales-hero p {
+  max-width: 650px;
+  margin: 16px auto 26px;
+  color: var(--prof-color-secundario);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.profesionales-busqueda {
+  width: min(100%, 680px);
+  min-height: 58px;
+  margin: 0 auto;
+  padding: 0 17px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #cddfd8;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(23, 59, 56, 0.06);
+  text-align: left;
+}
+
+.profesionales-busqueda > span {
+  color: var(--prof-color-principal);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.profesionales-busqueda input {
+  width: 100%;
+  min-width: 0;
+  padding: 15px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--prof-color-texto);
+}
+
+.profesionales-busqueda input::placeholder {
+  color: #879994;
+}
+
+.profesionales-busqueda:focus-within {
+  border-color: var(--prof-color-principal);
+  box-shadow: 0 0 0 3px rgba(24, 121, 110, 0.12);
+}
+
+/* Filtros y resultados */
+.profesionales-resultados {
+  width: min(1160px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+.profesionales-filtros {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.profesionales-filtros label {
+  color: var(--prof-color-texto);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.profesionales-filtros select {
+  min-width: 180px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid #cddfd8;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--prof-color-texto);
+  cursor: pointer;
+}
+
+.profesionales-filtros select:focus {
+  outline: 2px solid #9bd8ce;
+  border-color: var(--prof-color-principal);
+}
+
+.profesionales-cantidad {
+  margin-left: auto;
+  color: var(--prof-color-secundario);
+  font-size: 14px;
+}
+
+.profesionales-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.profesional-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 23px;
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(23, 59, 56, 0.035);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.profesional-card:hover {
+  transform: translateY(-3px);
+  border-color: #c2ddd3;
+  box-shadow: 0 12px 28px rgba(23, 59, 56, 0.08);
+}
+
+.profesional-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.profesional-avatar,
+.perfil-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #dff2ea;
+  color: var(--prof-color-principal-oscuro);
+  font-weight: 800;
+}
+
+.profesional-avatar {
+  width: 54px;
+  height: 54px;
+  font-size: 17px;
+}
+
+.profesional-categoria,
+.profesionales-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: var(--prof-color-acento);
+  color: var(--prof-color-principal-oscuro);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profesional-card h2 {
+  margin: 0 0 6px;
+  color: var(--prof-color-texto);
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.profesional-card h3 {
+  margin: 0 0 12px;
+  color: var(--prof-color-principal);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.profesional-card p {
+  flex: 1;
+  margin: 0 0 22px;
+  color: var(--prof-color-secundario);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.profesional-ver,
+.profesionales-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 11px 17px;
+  border: 1px solid var(--prof-color-principal);
+  border-radius: 9px;
+  background: var(--prof-color-principal);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.profesional-ver {
+  width: 100%;
+  margin-top: auto;
+}
+
+.profesional-ver:hover,
+.profesionales-boton:hover {
+  border-color: var(--prof-color-principal-oscuro);
+  background: var(--prof-color-principal-oscuro);
+}
+
+.profesional-ver:focus-visible,
+.profesionales-boton:focus-visible,
+.profesionales-volver:focus-visible,
+.profesionales-brand:focus-visible {
+  outline: 3px solid #9bd8ce;
+  outline-offset: 3px;
+}
+
+.profesionales-vacio {
+  padding: 48px 20px;
+  border: 1px dashed #c6dcd4;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+}
+
+.profesionales-vacio > span {
+  color: var(--prof-color-principal);
+  font-size: 40px;
+}
+
+.profesionales-vacio h2 {
+  margin: 10px 0;
+  font-size: 22px;
+}
+
+.profesionales-vacio p {
+  margin: 0 auto 20px;
+  color: var(--prof-color-secundario);
+  line-height: 1.6;
+}
+
+/* Perfil individual */
+.perfil-profesional {
+  width: min(780px, calc(100% - 36px));
+  margin: 42px auto 0;
+  padding: clamp(22px, 4vw, 42px);
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(23, 59, 56, 0.05);
+  text-align: center;
+}
+
+.perfil-avatar {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
+  font-size: 27px;
+}
+
+.perfil-profesional > .profesionales-etiqueta {
+  margin: 0 auto 12px;
+}
+
+.perfil-profesional > h1 {
+  margin: 0 0 8px;
+  color: var(--prof-color-texto);
+  font-size: clamp(27px, 4vw, 36px);
+  line-height: 1.2;
+}
+
+.perfil-profesional > h2 {
+  margin: 0 0 14px;
+  color: var(--prof-color-principal);
+  font-size: 18px;
+}
+
+.perfil-profesional > p {
+  color: var(--prof-color-secundario);
+  line-height: 1.65;
+}
+
+.perfil-profesional > .perfil-nota {
+  margin: 18px 0 22px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #f3f8f6;
+  color: var(--prof-color-secundario);
+  font-size: 13px;
+}
+
+/* Formulario de solicitud de servicio */
+.solicitud-formulario {
+  width: 100%;
+  max-width: 520px;
+  margin: 28px auto 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+}
+
+.solicitud-formulario h2 {
+  margin: 0 0 10px;
+  color: var(--prof-color-texto);
+  font-size: 22px;
+}
+
+.solicitud-formulario label,
+.resena-formulario label {
+  margin-top: 8px;
+  color: #24534d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.solicitud-formulario input,
+.solicitud-formulario textarea,
+.resena-formulario input,
+.resena-formulario textarea,
+.resena-formulario select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #d1e0db;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--prof-color-texto);
+  font: inherit;
+}
+
+.solicitud-formulario input:focus,
+.solicitud-formulario textarea:focus,
+.resena-formulario input:focus,
+.resena-formulario textarea:focus,
+.resena-formulario select:focus {
+  outline: 2px solid #9bd8ce;
+  border-color: var(--prof-color-principal);
+}
+
+.solicitud-formulario textarea,
+.resena-formulario textarea {
+  resize: vertical;
+}
+
+.solicitud-acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.solicitud-acciones .profesionales-volver {
+  margin: 0;
+}
+
+.solicitud-mensaje {
+  max-width: 520px;
+  margin: 24px auto 0;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: var(--prof-color-acento);
+  color: #17654d;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Reseñas y calificaciones */
+.resenas-seccion {
+  width: 100%;
+  max-width: 620px;
+  margin: 40px auto 0;
+  padding-top: 30px;
+  border-top: 1px solid var(--prof-color-borde);
+  text-align: left;
+}
+
+.resenas-seccion > h2 {
+  margin: 0 0 20px;
+  color: var(--prof-color-texto);
+  font-size: 24px;
+  text-align: center;
+}
+
+.resenas-vacias {
+  padding: 16px;
+  border-radius: 10px;
+  background: #f5f9f7;
+  color: var(--prof-color-secundario);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.resena-card {
+  margin-bottom: 12px;
+  padding: 17px;
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.resena-card h3 {
+  margin: 0 0 7px;
+  color: var(--prof-color-texto);
+  font-size: 15px;
+}
+
+.resena-card p {
+  margin: 8px 0 0;
+  color: var(--prof-color-secundario);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.resena-card .resena-estrellas {
+  margin: 0;
+  color: #b87908;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.resena-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 22px;
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 14px;
+  background: #f9fcfa;
+}
+
+.resena-formulario h3 {
+  margin: 0 0 8px;
+  color: var(--prof-color-texto);
+  font-size: 19px;
+}
+
+.resena-formulario .profesionales-boton {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+.resena-mensaje {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--prof-color-acento);
+  color: #17654d;
+  line-height: 1.5;
+}
+
+.resena-nota {
+  margin: 14px 0 0;
+  color: var(--prof-color-secundario);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Sugerencia de categoría */
+.sugerencia-categoria-formulario {
+  width: 100%;
+  max-width: 650px;
+  margin: 28px auto 0;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--prof-color-borde);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+}
+
+.sugerencia-categoria-formulario h2,
+.sugerencia-categoria-formulario h3 {
+  margin: 0 0 8px;
+  color: var(--prof-color-texto);
+}
+
+.sugerencia-categoria-formulario > label {
+  color: #24534d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sugerencia-categoria-formulario textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #d1e0db;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--prof-color-texto);
+  font: inherit;
+  resize: vertical;
+}
+
+.sugerencia-categoria-formulario textarea:focus {
+  outline: 2px solid #9bd8ce;
+  border-color: var(--prof-color-principal);
+}
+
+.sugerencia-categoria-acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.sugerencia-categoria-acciones .profesionales-volver {
+  margin: 0;
+}
+
+.sugerencia-categoria-mensaje {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--prof-color-acento);
+  color: #17654d;
+  line-height: 1.5;
+}
+
+.sugerencia-categoria-nota {
+  margin: 0;
+  color: var(--prof-color-secundario);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Adaptación a tablets y celulares */
+@media (max-width: 900px) {
+  .profesionales-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profesionales-hero {
+    padding-top: 46px;
+  }
+}
+
+@media (max-width: 600px) {
+  .profesionales-navbar {
+    min-height: 68px;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .profesionales-brand {
+    gap: 7px;
+    font-size: 19px;
+  }
+
+  .profesionales-brand-icon {
+    width: 33px;
+    height: 33px;
+    border-radius: 9px;
+  }
+
+  .profesionales-volver {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .profesionales-hero {
+    padding: 38px 18px 28px;
+  }
+
+  .profesionales-hero p {
+    font-size: 14px;
+  }
+
+  .profesionales-busqueda {
+    min-height: 52px;
+  }
+
+  .profesionales-resultados {
+    width: calc(100% - 28px);
+    padding-top: 22px;
+  }
+
+  .profesionales-filtros {
+    align-items: stretch;
+  }
+
+  .profesionales-filtros select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .profesionales-cantidad {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .profesionales-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .profesional-card {
+    padding: 19px;
+  }
+
+  .perfil-profesional {
+    width: calc(100% - 28px);
+    margin-top: 22px;
+    padding: 22px 16px;
+  }
+
+  .solicitud-formulario,
+  .resena-formulario,
+  .sugerencia-categoria-formulario {
+    padding: 18px;
+  }
+
+  .solicitud-acciones,
+  .sugerencia-categoria-acciones {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .solicitud-acciones button,
+  .sugerencia-categoria-acciones button,
+  .resena-formulario .profesionales-boton {
+    width: 100%;
+  }
+
+  .resenas-seccion {
+    margin-top: 30px;
+    padding-top: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profesional-card,
+  .profesional-ver,
+  .profesionales-boton,
+  .profesionales-volver {
+    transition: none;
+  }
+}

@@ -1,0 +1,260 @@
+
+.mis-servicios {
+  min-height: 100vh;
+  padding: 40px 7%;
+  background: #f5f8f7;
+  color: #173b38;
+}
+
+.servicios-encabezado {
+  max-width: 850px;
+  margin: 0 auto 35px;
+}
+
+.servicios-volver {
+  margin-bottom: 35px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #18796e;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.servicios-etiqueta {
+  margin: 0 0 8px;
+  color: #188779;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.servicios-encabezado h1 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 46px);
+}
+
+.servicios-encabezado > p:last-child {
+  max-width: 650px;
+  color: #647873;
+  line-height: 1.7;
+}
+
+.servicios-formulario-seccion,
+.servicios-listado {
+  max-width: 850px;
+  margin: 0 auto 30px;
+  padding: 30px;
+  border: 1px solid #e0eae6;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgb(26 65 56 / 5%);
+}
+
+.servicios-formulario-seccion h2,
+.servicios-listado h2 {
+  margin: 0 0 22px;
+  font-size: 24px;
+}
+
+.servicios-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.servicios-formulario label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.servicios-formulario input,
+.servicios-formulario select,
+.servicios-formulario textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d6e2de;
+  border-radius: 9px;
+  background: #fff;
+  color: #173b38;
+  font: inherit;
+}
+
+.servicios-formulario input:focus,
+.servicios-formulario select:focus,
+.servicios-formulario textarea:focus {
+  outline: 2px solid #9bd8ce;
+  border-color: #188779;
+}
+
+.servicios-formulario textarea {
+  resize: vertical;
+}
+
+.servicios-acciones-formulario,
+.servicio-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.servicios-boton-principal,
+.servicios-boton-secundario,
+.servicios-boton-eliminar {
+  padding: 11px 16px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.servicios-boton-principal {
+  background: #167d70;
+  color: #fff;
+}
+
+.servicios-boton-principal:hover {
+  background: #11675d;
+}
+
+.servicios-boton-secundario {
+  border-color: #d3e2dd;
+  background: #fff;
+  color: #22665d;
+}
+
+.servicios-boton-secundario:hover {
+  background: #eff7f4;
+}
+
+.servicios-boton-eliminar {
+  border-color: #f0d1ce;
+  background: #fff5f4;
+  color: #a53730;
+}
+
+.servicios-boton-eliminar:hover {
+  background: #ffe7e4;
+}
+
+.servicios-mensaje {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #eaf7f1;
+  color: #17654d;
+  line-height: 1.5;
+}
+
+.servicios-listado-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.servicios-listado-titulo h2 {
+  margin-bottom: 0;
+}
+
+.servicios-listado-titulo > span {
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #edf6f3;
+  color: #22665d;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.servicios-vacio {
+  margin-top: 25px;
+  padding: 30px 20px;
+  border: 1px dashed #cbded7;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.servicios-vacio h3 {
+  margin: 0 0 8px;
+}
+
+.servicios-vacio p {
+  margin-bottom: 0;
+  color: #647873;
+  line-height: 1.6;
+}
+
+.servicios-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+  margin-top: 25px;
+}
+
+.servicio-tarjeta {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e0eae6;
+  border-radius: 13px;
+}
+
+.servicio-categoria {
+  display: inline-block;
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #eaf7f3;
+  color: #18796e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.servicio-tarjeta h3 {
+  margin: 14px 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.servicio-tarjeta > p {
+  color: #647873;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.servicio-tarjeta .servicio-precio {
+  color: #176b5e;
+  font-weight: 700;
+}
+
+.servicio-confirmacion {
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid #e0eae6;
+}
+
+.servicio-confirmacion p {
+  font-weight: 600;
+}
+
+.servicio-confirmacion button {
+  margin: 4px 5px 4px 0;
+}
+
+@media (max-width: 600px) {
+  .mis-servicios {
+    padding: 25px 16px;
+  }
+
+  .servicios-formulario-seccion,
+  .servicios-listado {
+    padding: 20px;
+  }
+
+  .servicios-listado-titulo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
