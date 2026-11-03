@@ -1,0 +1,36 @@
+{
+  "name": "conectapro-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API REST de ConectaPro (Node.js + TypeScript + SQL Server)",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "setup:db": "tsx src/scripts/setup-db.ts",
+    "test:smoke": "tsx src/scripts/smoke-test.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.4",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "msnodesqlv8": "^5.0.2",
+    "mssql": "^12.2.0",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mssql": "^12.3.0",
+    "@types/node": "^24.10.9",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2"
+  }
+}

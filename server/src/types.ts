@@ -1,0 +1,115 @@
+export type Rol = 'cliente' | 'profesional'
+
+export type UsuarioPublico = {
+  id: number
+  nombre: string
+  correo: string
+  rol: Rol
+  telefono: string | null
+  profesionalId: number | null
+  especialidad?: string | null
+  zona?: string | null
+}
+
+export type Categoria = {
+  id: number
+  nombre: string
+  descripcion: string
+  icono: string
+}
+
+export type Servicio = {
+  id: number
+  profesionalId: number
+  profesionalNombre: string
+  profesionalIniciales: string
+  categoriaId: number
+  categoria: string
+  categoriaIcono: string
+  nombre: string
+  descripcion: string
+  precioReferencia: string | null
+  zona: string | null
+  disponible: boolean
+  modalidad: string
+  profesionalZona: string
+  profesionalEspecialidad: string
+  promedioPuntuacion: number | null
+  cantidadResenas: number
+  fechaCreacion: string
+}
+
+export type Profesional = {
+  id: number
+  usuarioId: number
+  nombre: string
+  correo: string
+  telefono: string | null
+  especialidad: string
+  descripcion: string
+  zona: string
+  aniosExperiencia: number
+  tarifaReferencia: string | null
+  disponible: boolean
+  verificado: boolean
+  iniciales: string
+  promedioPuntuacion: number | null
+  cantidadResenas: number
+  categorias: string[]
+  servicios: Servicio[]
+}
+
+export type Solicitud = {
+  id: number
+  clienteId: number
+  clienteNombre: string
+  profesionalId: number
+  profesionalNombre: string
+  servicioId: number | null
+  servicioNombre: string | null
+  mensaje: string
+  estado: 'pendiente' | 'aceptada' | 'rechazada' | 'finalizada'
+  fechaCreacion: string
+}
+
+export type Resena = {
+  id: number
+  profesionalId: number
+  clienteId: number
+  clienteNombre: string
+  puntuacion: number
+  comentario: string
+  fechaCreacion: string
+}
+
+export type Pago = {
+  id: number
+  solicitudId: number
+  clienteId: number
+  profesionalNombre: string
+  servicioNombre: string | null
+  monto: number
+  moneda: string
+  estado: 'aprobado' | 'rechazado' | 'pendiente'
+  marca: string
+  ultimos4: string
+  titular: string
+  vencimientoMes: number
+  vencimientoAnio: number
+  referencia: string
+  fechaCreacion: string
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      usuario?: {
+        id: number
+        rol: Rol
+        nombre: string
+        correo: string
+        profesionalId: number | null
+      }
+    }
+  }
+}

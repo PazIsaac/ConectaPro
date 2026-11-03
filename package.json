@@ -1,17 +1,26 @@
 {
   "name": "conectapro",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "npm --prefix server run dev",
+    "dev:all": "concurrently -n api,web -c yellow,cyan \"npm --prefix server run dev\" \"npm run dev\"",
+    "setup:db": "npm --prefix server run setup:db",
     "build": "tsc -b && vite build",
+    "build:api": "npm --prefix server run build",
+    "build:all": "npm run build && npm run build:api",
+    "start": "npm --prefix server run start",
+    "test:api": "npm --prefix server run test:smoke",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "crd-ui": "^0.13.2",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
@@ -19,6 +28,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.6.2",
+    "concurrently": "^9.2.1",
     "oxlint": "^1.89.0",
     "typescript": "~7.0.2",
     "vite": "^8.3.5"
