@@ -17,12 +17,13 @@ Plataforma full stack que conecta clientes con profesionales independientes de o
 5. [Variables de entorno](#variables-de-entorno)
 6. [Cuentas de demostración](#cuentas-de-demostración)
 7. [Scripts disponibles](#scripts-disponibles)
-8. [Cómo probar la aplicación](#cómo-probar-la-aplicación)
-9. [Inteligencia artificial](#inteligencia-artificial)
-10. [Pagos con tarjeta](#pagos-con-tarjeta)
-11. [Compilar para producción](#compilar-para-producción)
-12. [Solución de problemas](#solución-de-problemas)
-13. [Seguridad](#seguridad)
+8. [Pruebas y validaciones](#pruebas-y-validaciones)
+9. [Restricciones del diseño](#restricciones-del-diseño)
+10. [Inteligencia artificial](#inteligencia-artificial)
+11. [Pagos con tarjeta](#pagos-con-tarjeta)
+12. [Compilar para producción](#compilar-para-producción)
+13. [Solución de problemas](#solución-de-problemas)
+14. [Seguridad](#seguridad)
 
 ---
 
@@ -293,7 +294,33 @@ Ejecutados desde la raíz del proyecto:
 
 ---
 
-## Cómo probar la aplicación
+## Pruebas y validaciones
+
+La calidad del proyecto se verifica en tres capas: interfaz, API y base de datos. Además de las pruebas automatizadas, se documentan las reglas de validación y las comprobaciones manuales del flujo completo.
+
+### Estrategia de validación
+
+| Capa | Qué valida | Implementación |
+| --- | --- | --- |
+| Formulario / UI | Campos obligatorios, formatos, longitud, tarjeta, importe | Componentes React y funciones de `Pago.tsx` |
+| API | Esquema del cuerpo, rol, propiedad del recurso, estados y duplicados | Zod, middlewares `autenticar` / `soloRol` y consultas parametrizadas |
+| Base de datos | Tipos, longitudes, claves únicas, relaciones y rangos | Restricciones `CHECK`, `UNIQUE`, `FOREIGN KEY` y columnas tipadas de SQL Server |
+
+### Validaciones implementadas
+
+| Módulo | Regla validada | Dónde se valida |
+| --- | --- | --- |
+| Registro | Nombre entre 2 y 120 caracteres; correo con formato válido y único; contraseña entre 8 y 72; rol `cliente` o `profesional` | UI + Zod + SQL Server |
+| Login | Correo con formato válido y contraseña no vacía; credenciales contra hash bcrypt | UI + API |
+| Servicios | Nombre entre 5 y 120; descripción entre 20 y 1000; categoría existente y activa; modalidad permitida; precio y zona con máximo de caracteres | Zod + SQL Server |
+| Propiedad de servicios | Solo el profesional dueño puede editar, pausar o eliminar; la baja es lógica | Middleware + consulta SQL |
+| Solicitudes | Mensaje entre 10 y 1000; profesional existente; solo clientes crean; solo el destinatario cambia el estado; estados permitidos | UI + Zod + SQL Server |
+| Reseñas | Puntuación entera de 1 a 5; comentario entre 10 y 1000; una reseña por cliente y profesional; solo el autor elimina | UI + Zod + SQL Server |
+| Pagos | Número de 13 a 19 dígitos y válido por Luhn; vencimiento `MM/AA` no vencido; CVC de 3 o 4 dígitos; importe entre $1 y $10.000.000; token `demo_<uuid>` | UI + Zod + API |
+| Permisos de pago | Solo clientes; solo el dueño de la solicitud; estado `aceptada` o `finalizada`; un pago por solicitud | Middleware + consulta SQL + `UNIQUE` |
+| Datos de tarjeta | No se envía ni persiste el número completo ni el CVV; solo marca, últimos 4, titular y vencimiento | UI + API + esquema SQL |
+| Asistente IA | Texto de 10 a 1000 para sugerencias y de 20 a 1500 para mejorar descripciones; límite de frecuencia; sesión para mejorar | UI + Zod + rate limit |
+| Filtros | Palabra clave hasta 100 caracteres; categoría, zona y disponibilidad con tipos permitidos | Zod + consulta parametrizada |
 
 ### Prueba automática de la API
 
@@ -330,6 +357,81 @@ Al finalizar, limpia los datos temporales que creó.
 7. Aceptá la solicitud desde la cuenta del profesional y volvé a la cuenta del cliente.
 8. Entrá a **Mis solicitudes**, pulsá **Pagar servicio** y probá el checkout con la tarjeta de prueba (ver [Pagos con tarjeta](#pagos-con-tarjeta)).
 9. Verificá que un profesional no pueda responder solicitudes ajenas ni borrar reseñas de clientes.
+
+### Resultados de la última ejecución
+
+| Verificación | Resultado |
+| --- | --- |
+| `npm run test:api` | 82 comprobaciones aprobadas |
+| `npm run build` | Frontend compilado sin errores |
+| `npm run build:api` | API compilada sin errores |
+| Flujo de pago en navegador | Checkout, tarjeta `crd-ui`, comprobante y estado “Pagado” verificados |
+| Responsive | Sin desbordes a 390 px y en escritorio |
+
+> `npm run lint` queda pendiente en entornos con Node 22.17 o anterior, porque `oxlint.config.ts` requiere Node ≥ 22.18. No afecta la compilación ni las pruebas de API.
+
+---
+
+## Restricciones del diseño
+
+Las siguientes restricciones condicionaron las decisiones técnicas y funcionales del proyecto. Se documentan para que el alcance y las limitaciones sean explícitos.
+
+### Restricciones tecnológicas
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Stack obligatorio: React + TypeScript, Node.js + TypeScript y SQL Server | No se pueden usar frameworks de backend ni bases NoSQL | Se implementó una SPA React y una API Express separada, con SQL Server como única fuente de datos |
+| SQL Server no ofrece RLS equivalente a Supabase | No se puede delegar la autorización a la base por fila | La autorización se valida en la API y se refuerza con `FK`, `UNIQUE` y `CHECK` |
+| Entorno local Windows con SQL Server Express | La conexión depende de la instancia y del driver ODBC | Se soportan autenticación de Windows (`msnodesqlv8`) y autenticación SQL (`tedious`) |
+| Node.js 20/22 LTS | Algunas herramientas modernas requieren versiones más nuevas | Se documenta la versión recomendada; la configuración `.ts` de oxlint requiere Node ≥ 22.18 |
+| Sin servidor de pagos ni pasarela real | No se pueden procesar cobros reales | El módulo funciona en modo demostración y lo informa en la interfaz |
+| Dependencia `crd-ui` 0.13.2 | La UI de tarjeta queda sujeta a la API de la librería | Se aisló su uso en `Pago.tsx` y se importan solo los helpers necesarios |
+| Sin Docker ni infraestructura cloud | El despliegue es manual y local | Se proveen scripts `setup:db`, `build:all` y variables de entorno documentadas |
+
+### Restricciones funcionales
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Solo existen roles `cliente` y `profesional` | No hay administrador dentro de la aplicación | Las tareas administrativas se hacen con SSMS, `sqlcmd` o scripts |
+| Un profesional solo gestiona sus publicaciones | No puede corregir publicaciones ajenas | Se verifica la propiedad en cada operación de escritura |
+| Una reseña por cliente y profesional | No se puede editar el historial de reseñas | Restricción `UNIQUE` y mensaje 409 |
+| Un pago por solicitud | No se permiten pagos parciales ni repetidos | Restricción `UNIQUE` y validación previa en la API |
+| Pago solo para solicitudes aceptadas o finalizadas | No se puede pagar un pedido pendiente o rechazado | Verificación de estado antes del `INSERT` |
+| Sin mensajería en tiempo real | La coordinación ocurre fuera de la plataforma | El campo `Mensaje` de la solicitud concentra el contexto inicial |
+| Sin recuperación de contraseña por correo | Un usuario que la olvida necesita intervención manual | Se documenta como limitación y se usan cuentas demo |
+| Categorías predefinidas | No se crean rubros desde la interfaz | Las 9 categorías se cargan con `02_seed.sql` |
+| Sin cobro real ni facturación | El comprobante es solo un registro interno | Se muestra una advertencia explícita en el checkout |
+
+### Restricciones de datos y seguridad
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| No se puede almacenar el PAN completo ni el CVV | El comprobante no puede mostrar la tarjeta completa | Solo se guardan marca, últimos 4, titular y vencimiento |
+| Los secretos no deben versionarse | La configuración local no se comparte | `.env` está en `.gitignore`; se versiona `.env.example` |
+| Las contraseñas no se guardan en texto plano | Se requiere hash y comparación segura | bcryptjs con hash y verificación |
+| Los tokens pueden ser manipulados | El rol del token no es confiable | El rol y el estado del usuario se releen desde SQL Server en cada request |
+| Los datos de demostración no son reales | No deben usarse en producción | Se documenta que `Demo1234!` es solo para desarrollo |
+| Validación de tarjeta en el cliente | Un cliente malicioso podría omitir la UI | La API valida longitud de últimos 4, token, importe, vencimiento y permisos |
+
+### Restricciones de interfaz y experiencia
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Idioma español | No hay internacionalización | Todos los textos y mensajes están en español |
+| Diseño responsive sin librería de componentes | Hay que mantener CSS propio | Se usan hojas por página y puntos de corte en 1060, 820, 620 y 390 px |
+| Accesibilidad básica | No se realizó una auditoría WCAG completa | Se usan `label`, `aria-invalid`, `aria-busy`, foco visible y textos alternativos |
+| Sin modo oscuro | La interfaz usa un único tema claro | Se deja como mejora futura |
+| El pago debe ser visualmente claro | La tarjeta no puede parecer un cobro real | Se agregan avisos de demostración y nota de privacidad |
+
+### Restricciones operativas
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Base local con datos demo | Las pruebas deben poder repetirse | `setup:db` es idempotente y el smoke test limpia sus datos |
+| Sin CI/CD | Las verificaciones se ejecutan manualmente | Se documentan los comandos de build y test |
+| API y frontend en puertos separados en desarrollo | Se necesita proxy para `/api` | `vite.config.ts` redirige a `http://localhost:4000` |
+| Una sola instancia de API | No hay escalado horizontal | Suficiente para el alcance académico |
+| Sin monitoreo centralizado | Los errores se revisan en consola | Se usa un manejador de errores común y registro de IA en `IaConsultas` |
 
 ---
 

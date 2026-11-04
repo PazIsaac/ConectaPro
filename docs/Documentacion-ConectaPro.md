@@ -11,20 +11,21 @@
 1. [Descripción general](#descripción-general)
 2. [Objetivos y alcance](#objetivos-y-alcance)
 3. [Actores y roles](#actores-y-roles)
-4. [Casos de uso](#casos-de-uso)
-5. [Flujo principal](#flujo-principal)
-6. [Modelo de datos](#modelo-de-datos)
-7. [Navegación de la aplicación](#navegación-de-la-aplicación)
-8. [Arquitectura técnica](#arquitectura-técnica)
-9. [API REST](#api-rest)
-10. [Seguridad y autorización](#seguridad-y-autorización)
-11. [Módulo de pagos con tarjeta](#módulo-de-pagos-con-tarjeta)
-12. [Manual de usuario](#manual-de-usuario)
-13. [Plan de pruebas funcionales](#plan-de-pruebas-funcionales)
-14. [Registro de errores](#registro-de-errores)
-15. [Organización del equipo](#organización-del-equipo)
-16. [Criterios de cierre](#criterios-de-cierre)
-17. [Anexos](#anexos)
+4. [Restricciones del diseño](#restricciones-del-diseño)
+5. [Casos de uso](#casos-de-uso)
+6. [Flujo principal](#flujo-principal)
+7. [Modelo de datos](#modelo-de-datos)
+8. [Navegación de la aplicación](#navegación-de-la-aplicación)
+9. [Arquitectura técnica](#arquitectura-técnica)
+10. [API REST](#api-rest)
+11. [Seguridad y autorización](#seguridad-y-autorización)
+12. [Módulo de pagos con tarjeta](#módulo-de-pagos-con-tarjeta)
+13. [Manual de usuario](#manual-de-usuario)
+14. [Pruebas y validaciones](#pruebas-y-validaciones)
+15. [Registro de errores](#registro-de-errores)
+16. [Organización del equipo](#organización-del-equipo)
+17. [Criterios de cierre](#criterios-de-cierre)
+18. [Anexos](#anexos)
 
 ---
 
@@ -72,6 +73,69 @@ Construir una plataforma funcional, segura y responsive que conecte clientes con
 - Aplicación móvil nativa.
 - Facturación electrónica o conciliación bancaria.
 - Recuperación de contraseña por correo electrónico.
+
+---
+
+## Restricciones del diseño
+
+Las restricciones del diseño definen los límites técnicos, funcionales y operativos que condicionaron la solución. Se documentan para evitar expectativas fuera del alcance y para justificar las decisiones tomadas.
+
+### Restricciones tecnológicas
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Stack obligatorio: React + TypeScript, Node.js + TypeScript y SQL Server | No se pueden incorporar frameworks de backend ni bases NoSQL | SPA React + API Express separada; SQL Server como única fuente de datos |
+| SQL Server no ofrece RLS equivalente a Supabase | La autorización no puede delegarse por fila a la base | Validación de sesión, rol y propiedad en la API; refuerzo con `FK`, `UNIQUE` y `CHECK` |
+| Entorno local Windows con SQL Server Express | La conexión depende de la instancia y del driver ODBC | Soporte para autenticación de Windows (`msnodesqlv8`) y autenticación SQL (`tedious`) |
+| Node.js 20/22 LTS | Algunas herramientas requieren versiones más nuevas | Se documenta la versión recomendada; `oxlint.config.ts` requiere Node ≥ 22.18 |
+| Sin pasarela de pagos real | No se pueden procesar cobros reales | Módulo de pago en modo demostración, con aviso explícito en la UI |
+| Dependencia `crd-ui` 0.13.2 | La interfaz de tarjeta depende de la API de la librería | Uso aislado en `Pago.tsx`; solo se importan `Card` y helpers necesarios |
+| Sin Docker ni infraestructura cloud | El despliegue es manual y local | Scripts `setup:db`, `build:all` y variables de entorno documentadas |
+
+### Restricciones funcionales
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Solo roles `cliente` y `profesional` | No existe administrador dentro de la aplicación | Tareas administrativas con SSMS, `sqlcmd` o scripts |
+| El profesional solo gestiona sus publicaciones | No puede corregir publicaciones ajenas | Verificación de propiedad en cada escritura |
+| Una reseña por cliente y profesional | No se permite más de una opinión por vínculo | Restricción `UNIQUE` y respuesta 409 |
+| Un pago por solicitud | No hay pagos parciales ni repetidos | Restricción `UNIQUE` y verificación previa |
+| Pago solo para solicitudes `aceptada` o `finalizada` | No se puede pagar un pedido pendiente o rechazado | Validación de estado antes del `INSERT` |
+| Sin mensajería en tiempo real | La coordinación continúa fuera de la plataforma | El mensaje inicial de la solicitud concentra el contexto |
+| Sin recuperación de contraseña por correo | Un usuario que la olvida requiere intervención manual | Limitación documentada y cuentas demo disponibles |
+| Categorías predefinidas | No se crean rubros desde la interfaz | Las 9 categorías se cargan con `02_seed.sql` |
+| Sin cobro real ni facturación | El comprobante es un registro interno | Aviso de demostración en el checkout y en el comprobante |
+
+### Restricciones de datos y seguridad
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| No se almacena el PAN completo ni el CVV | El comprobante no muestra la tarjeta completa | Solo marca, últimos 4, titular y vencimiento |
+| Los secretos no se versionan | La configuración local no se comparte | `.env` ignorado por Git; `.env.example` versionado |
+| Contraseñas nunca en texto plano | Se requiere hash y comparación segura | bcryptjs con hash y verificación |
+| El rol del token no es confiable | Un token manipulado podría intentar escalar privilegios | El usuario y su rol se releen desde SQL Server en cada request |
+| Los datos demo no son reales | No deben usarse en producción | `Demo1234!` documentada solo para desarrollo |
+| Validación de tarjeta en el cliente | La UI puede omitirse | La API valida token, importe, vencimiento, últimos 4 y permisos |
+
+### Restricciones de interfaz y experiencia
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Idioma español | No hay internacionalización | Todos los textos y mensajes están en español |
+| Sin librería de componentes visuales | Hay que mantener CSS propio | Hojas por página y puntos de corte en 1060, 820, 620 y 390 px |
+| Accesibilidad básica | No se realizó auditoría WCAG completa | `label`, `aria-invalid`, `aria-busy`, foco visible y textos alternativos |
+| Sin modo oscuro | La interfaz usa un único tema claro | Mejora futura |
+| El pago debe ser visualmente claro | No puede parecer un cobro real | Avisos de demostración y nota de privacidad |
+
+### Restricciones operativas
+
+| Restricción | Impacto | Decisión / mitigación |
+| --- | --- | --- |
+| Base local con datos demo | Las pruebas deben poder repetirse | `setup:db` idempotente y limpieza al final del smoke test |
+| Sin CI/CD | Las verificaciones se ejecutan manualmente | Comandos de build y test documentados |
+| API y frontend en puertos separados en desarrollo | Se necesita proxy para `/api` | `vite.config.ts` redirige a `http://localhost:4000` |
+| Una sola instancia de API | No hay escalado horizontal | Suficiente para el alcance académico |
+| Sin monitoreo centralizado | Los errores se revisan en consola | Manejador de errores común y registro de IA en `IaConsultas` |
 
 ---
 
@@ -735,7 +799,33 @@ Pulsar **Salir** en la barra de navegación. El token se elimina del almacenamie
 
 ---
 
-## Plan de pruebas funcionales
+## Pruebas y validaciones
+
+Las pruebas verifican el comportamiento funcional y las validaciones comprueban que los datos cumplan las reglas en cada capa. La estrategia combina pruebas automatizadas de API, pruebas manuales del flujo y validaciones defensivas en interfaz, API y SQL Server.
+
+### Estrategia de validación
+
+| Capa | Qué valida | Implementación |
+| --- | --- | --- |
+| Formulario / UI | Campos obligatorios, formatos, longitudes, tarjeta e importe | Componentes React y funciones de `Pago.tsx` |
+| API | Esquema, rol, propiedad, estados, duplicados e importes | Zod, `autenticar`, `soloRol` y consultas parametrizadas |
+| Base de datos | Tipos, longitudes, unicidad, relaciones y rangos | `CHECK`, `UNIQUE`, `FOREIGN KEY` y columnas tipadas |
+
+### Validaciones implementadas
+
+| Módulo | Regla validada | Capa |
+| --- | --- | --- |
+| Registro | Nombre 2–120; correo válido y único; contraseña 8–72; rol `cliente` o `profesional` | UI + API + SQL |
+| Login | Correo válido; contraseña no vacía; verificación con bcrypt | UI + API |
+| Servicios | Nombre 5–120; descripción 20–1000; categoría activa; modalidad permitida; precio y zona acotados | UI + API + SQL |
+| Propiedad | Solo el profesional dueño edita, pausa o elimina su publicación | API |
+| Solicitudes | Mensaje 10–1000; profesional existente; solo clientes crean; solo el destinatario responde; estados válidos | UI + API + SQL |
+| Reseñas | Puntuación entera 1–5; comentario 10–1000; una por cliente y profesional; solo el autor elimina | UI + API + SQL |
+| Pagos | Número 13–19 dígitos y Luhn; vencimiento no vencido; CVC 3/4; importe $1–$10.000.000; token `demo_<uuid>` | UI + API |
+| Permisos de pago | Solo clientes; solo el dueño; estado `aceptada` o `finalizada`; un pago por solicitud | API + SQL |
+| Tarjeta | No se persiste el PAN completo ni el CVV | UI + API + SQL |
+| IA | Texto 10–1000 para sugerir y 20–1500 para mejorar; límite de frecuencia; sesión para mejorar | UI + API |
+| Filtros | Búsqueda ≤ 100; categoría, zona y disponibilidad con tipos permitidos | API |
 
 ### Pruebas automatizadas
 
@@ -799,6 +889,18 @@ Resultado esperado:
 | CNF-03 | Validación de tipos | TypeScript estricto sin errores | Aprobado |
 | CNF-04 | Persistencia tras reinicio | Los datos siguen en SQL Server | Aprobado |
 | CNF-05 | Rate limit de login | 429 tras superar el límite | Aprobado |
+
+### Resultados de la última ejecución
+
+| Verificación | Resultado |
+| --- | --- |
+| `npm run test:api` | 82 comprobaciones aprobadas |
+| `npm run build` | Frontend compilado sin errores |
+| `npm run build:api` | API compilada sin errores |
+| Flujo de pago en navegador | Checkout, tarjeta `crd-ui`, comprobante y estado “Pagado” verificados |
+| Responsive | Sin desbordes a 390 px y en escritorio |
+
+> `npm run lint` requiere Node ≥ 22.18 por la configuración `.ts` de oxlint. La limitación está registrada como ERR-06 y no afecta la compilación ni las pruebas de API.
 
 ---
 
@@ -886,6 +988,7 @@ El proyecto se considera cerrado cuando se cumplen todos los puntos siguientes:
 - [x] Documentación técnica y de API.
 - [x] Manual de usuario.
 - [x] Plan de pruebas y resultados.
+- [x] Restricciones del diseño documentadas.
 - [x] Registro de errores.
 - [x] Organización del equipo.
 - [x] Criterios de cierre.
