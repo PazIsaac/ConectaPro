@@ -40,6 +40,8 @@ Antes de empezar, instalá:
 | [Microsoft ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql-server/connect/odbc/download-odbc-driver-for-sql-server) | 18.x | Conexión con autenticación de Windows |
 
 > En Windows, la instalación típica de SQL Server Express crea la instancia `localhost\SQLEXPRESS`. El proyecto viene configurado para esa instancia, pero podés cambiarla en `server/.env`.
+>
+> La copia `database/backup/ConectaPro.bak` se generó con SQL Server 2025. Si usás SQL Server 2019 o 2022, importá `database/backup/ConectaPro_completa.sql` (ver [Opción C](#opción-c-importar-la-copia-incluida-en-el-proyecto)).
 
 Para verificar que SQL Server esté activo:
 
@@ -65,7 +67,10 @@ Debe aparecer `ODBC Driver 18 for SQL Server`.
 ConectaPro/
 ├── database/
 │   ├── 01_schema.sql        # Tablas, relaciones, índices y migraciones idempotentes
-│   └── 02_seed.sql          # Categorías, usuarios, profesionales, servicios y reseñas demo
+│   ├── 02_seed.sql          # Categorías, usuarios, profesionales, servicios y reseñas demo
+│   └── backup/
+│       ├── ConectaPro_completa.sql  # Copia portable con esquema y datos (recomendada)
+│       └── ConectaPro.bak           # Backup nativo de SQL Server 2025
 ├── server/                  # API REST (Node.js + TypeScript)
 │   ├── src/
 │   │   ├── app.ts           # Aplicación Express
@@ -74,7 +79,7 @@ ConectaPro/
 │   │   ├── db.ts            # Pool de conexiones
 │   │   ├── routes/          # Endpoints: auth, servicios, solicitudes, reseñas, pagos, IA...
 │   │   ├── services/        # Consultas de catálogo, reseñas e IA
-│   │   └── scripts/         # setup-db.ts y smoke-test.ts
+│   │   └── scripts/         # setup-db.ts, exportar-db.ts y smoke-test.ts
 │   ├── .env.example         # Plantilla de configuración (copiar a .env)
 │   └── package.json
 ├── src/                     # Frontend React + TypeScript
@@ -99,6 +104,9 @@ Copy-Item server\.env.example server\.env
 # 3. Crear la base, aplicar el esquema y cargar los datos demo
 npm run setup:db
 
+#    Alternativa: importar la copia ya incluida en el proyecto
+#    sqlcmd -S localhost\SQLEXPRESS -E -C -i database\backup\ConectaPro_completa.sql
+
 # 4. Levantar API y frontend juntos
 npm run dev:all
 ```
@@ -113,6 +121,8 @@ Si `npm run setup:db` termina mostrando un resumen como este, la base quedó lis
 ```text
 [setup] Listo. Resumen: { Categorias: 9, Profesionales: 9, Servicios: 18, Resenas: 5 }
 ```
+
+> Si preferís no generar los datos desde cero, la [Opción C](#opción-c-importar-la-copia-incluida-en-el-proyecto) importa una copia de la base ya cargada.
 
 > **Importante:** los scripts de la API leen `server/.env`. Si no existe, se usan valores por defecto de desarrollo, pero conviene crearlo para configurar correctamente la instancia de SQL Server.
 
@@ -164,6 +174,69 @@ sqlcmd -S localhost\SQLEXPRESS -E -Q "IF DB_ID('ConectaPro') IS NULL CREATE DATA
 sqlcmd -S localhost\SQLEXPRESS -E -d ConectaPro -i database\01_schema.sql
 sqlcmd -S localhost\SQLEXPRESS -E -d ConectaPro -i database\02_seed.sql
 ```
+
+### Opción C: importar la copia incluida en el proyecto
+
+El repositorio incluye una copia de la base ya cargada en [`database/backup/`](database/backup). Sirve para arrancar sin ejecutar `setup:db` y para compartir el mismo estado de datos entre equipos.
+
+| Archivo | Formato | Cuándo usarlo |
+| --- | --- | --- |
+| `ConectaPro_completa.sql` | Script portable con esquema y datos | **Recomendado.** Funciona en SQL Server 2019 o superior |
+| `ConectaPro.bak` | Backup nativo generado con SQL Server 2025 | Restauración exacta, solo en SQL Server 2025 |
+
+La copia contiene 9 categorías, 12 usuarios, 9 profesionales, 18 servicios, 2 solicitudes, 5 reseñas y el historial de consultas de IA. Las cuentas demo conservan la contraseña `Demo1234!` (o la definida en `DEMO_PASSWORD` al momento de generarla).
+
+#### C.1 Script portable (recomendado)
+
+Con la instancia de SQL Server activa, desde la raíz del proyecto:
+
+```powershell
+sqlcmd -S localhost\SQLEXPRESS -E -C -i database\backup\ConectaPro_completa.sql
+```
+
+El script:
+
+1. Crea la base `ConectaPro` si todavía no existe.
+2. Aplica el esquema de `01_schema.sql` (tablas, relaciones, índices y restricciones).
+3. Inserta las filas de la copia con sus identificadores originales.
+4. Reajusta los contadores `IDENTITY` para que los próximos registros no choquen.
+5. Muestra un resumen de filas por tabla.
+
+Es **idempotente**: si lo volvés a ejecutar, solo agrega las filas que falten. No duplica registros ni sobrescribe cambios locales, así que también sirve para completar una base existente.
+
+> El archivo está guardado en UTF-8 con BOM para que SSMS y `sqlcmd` respeten acentos y emojis. Si tu terminal muestra caracteres raros, ejecutá `chcp 65001` antes de importar.
+
+#### C.2 Backup nativo (.bak)
+
+El backup se generó con **SQL Server 2025** (17.0). No se puede restaurar en versiones anteriores; en ese caso usá el script portable de la sección C.1.
+
+El servicio de SQL Server debe poder leer el archivo, y su carpeta `DATA` debe existir en el equipo de destino. Copiá el `.bak` a una ubicación accesible por la instancia (por ejemplo, su carpeta `Backup`) y ejecutá:
+
+```powershell
+# 1. Ver los nombres lógicos y las rutas originales del backup
+sqlcmd -S localhost\SQLEXPRESS -E -C -Q "RESTORE FILELISTONLY FROM DISK = N'C:\ruta\accesible\ConectaPro.bak'"
+
+# 2. Restaurar indicando dónde deben quedar los archivos de la base
+sqlcmd -S localhost\SQLEXPRESS -E -C -Q "RESTORE DATABASE [ConectaPro] FROM DISK = N'C:\ruta\accesible\ConectaPro.bak' WITH MOVE N'ConectaPro' TO N'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\DATA\ConectaPro.mdf', MOVE N'ConectaPro_log' TO N'C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\DATA\ConectaPro_log.ldf', RECOVERY"
+```
+
+> Ajustá `MSSQL17.SQLEXPRESS` y las rutas `DATA` a tu instalación. También podés usar SSMS: **Bases de datos → clic derecho → Restaurar base de datos → Dispositivo → Agregar** y elegir el `.bak`.
+
+#### Regenerar la copia
+
+Después de cambiar datos locales, la copia portable se puede volver a generar desde la base actual:
+
+```powershell
+npm run export:db
+```
+
+El comando escribe `database/backup/ConectaPro_completa.sql` con el esquema y los datos vigentes. El `.bak` se regenera con SSMS o con:
+
+```powershell
+sqlcmd -S localhost\SQLEXPRESS -E -C -Q "BACKUP DATABASE [ConectaPro] TO DISK = N'C:\ruta\accesible\ConectaPro.bak' WITH FORMAT, COPY_ONLY, CHECKSUM"
+```
+
+> En SQL Server Express el backup comprimido no está disponible; omití `COMPRESSION` o usá `NO_COMPRESSION`.
 
 ### Tablas principales
 
@@ -285,6 +358,7 @@ Ejecutados desde la raíz del proyecto:
 | `npm run dev:api` | Levanta solo la API con recarga automática (puerto 4000) |
 | `npm run dev:all` | Levanta API y frontend juntos |
 | `npm run setup:db` | Crea la base, aplica el esquema y carga los datos demo |
+| `npm run export:db` | Regenera `database/backup/ConectaPro_completa.sql` con esquema y datos actuales |
 | `npm run test:api` | Ejecuta la prueba de humo contra SQL Server real |
 | `npm run build` | Compila el frontend |
 | `npm run build:api` | Compila la API a `server/dist` |
@@ -583,6 +657,14 @@ Causas habituales:
 ### `npm run setup:db` falla al crear la base
 
 El usuario de Windows necesita permiso para crear bases. Si no lo tiene, creá `ConectaPro` manualmente con SSMS y volvé a ejecutar el comando; el script detectará que ya existe.
+
+### La importación de la copia falla
+
+- **`Cannot open backup device ... Operating system error 5 (Acceso denegado)`**: el servicio de SQL Server no puede leer el `.bak` desde la carpeta del proyecto. Copialo a una ruta accesible por la instancia (por ejemplo, su carpeta `Backup`) y volvé a intentar.
+- **`The database cannot be restored ... because it was created by a newer version`**: el `.bak` se generó con SQL Server 2025. Importá en su lugar `database/backup/ConectaPro_completa.sql`, que funciona desde SQL Server 2019.
+- **`The logical file 'ConectaPro' is not part of database`**: revisá los nombres que devuelve `RESTORE FILELISTONLY` y usalos en las cláusulas `MOVE`.
+- **`Exclusive access could not be obtained`**: cerrá la API y volvé a ejecutar el restore, o liberá la base con `ALTER DATABASE ConectaPro SET SINGLE_USER WITH ROLLBACK IMMEDIATE;`.
+- **Errores de acentos al importar**: ejecutá `chcp 65001` en PowerShell. El script ya está guardado en UTF-8 con BOM.
 
 ### El frontend muestra errores de red
 

@@ -515,7 +515,10 @@ flowchart LR
 ConectaPro/
 ├── database/
 │   ├── 01_schema.sql        # Tablas, relaciones, índices y migraciones idempotentes
-│   └── 02_seed.sql          # Datos de demostración
+│   ├── 02_seed.sql          # Datos de demostración
+│   └── backup/
+│       ├── ConectaPro_completa.sql  # Copia portable con esquema y datos
+│       └── ConectaPro.bak           # Backup nativo de SQL Server 2025
 ├── server/
 │   └── src/
 │       ├── app.ts           # Aplicación Express
@@ -525,7 +528,7 @@ ConectaPro/
 │       ├── middleware/      # auth, errores, validación
 │       ├── routes/          # auth, categorías, profesionales, servicios, solicitudes, reseñas, pagos, IA
 │       ├── services/        # lógica de catálogo, reseñas e IA
-│       └── scripts/         # setup-db.ts y smoke-test.ts
+│       └── scripts/         # setup-db.ts, exportar-db.ts y smoke-test.ts
 ├── src/                     # Frontend React
 ├── docs/                    # Esta documentación
 ├── package.json
@@ -736,11 +739,13 @@ Se utiliza [`crd-ui`](https://github.com/JuandaGarcia/crd-ui) versión **0.13.2*
 npm install
 npm --prefix server install
 Copy-Item server\.env.example server\.env
-npm run setup:db
+npm run setup:db     # o importar database\backup\ConectaPro_completa.sql
 npm run dev:all
 ```
 
 Abrir `http://localhost:5173`.
+
+> La base también se puede restaurar desde la copia incluida: `sqlcmd -S localhost\SQLEXPRESS -E -C -i database\backup\ConectaPro_completa.sql`. El detalle de ambas variantes está en el README, sección **Cargar la base de datos**.
 
 ### 3. Registro
 
@@ -1039,6 +1044,7 @@ El resto de las cuentas demo usa la misma contraseña.
 ```powershell
 npm run dev:all      # API + frontend
 npm run setup:db     # Crear/aplicar esquema y datos demo
+npm run export:db    # Regenerar la copia portable de la base
 npm run test:api     # 82 comprobaciones contra la base real
 npm run build        # Compilar frontend
 npm run build:api    # Compilar API
