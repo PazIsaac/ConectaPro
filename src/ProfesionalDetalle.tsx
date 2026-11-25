@@ -6,6 +6,15 @@ import { estrellas, formatearFecha, formatearPuntaje } from './formato'
 import type { Profesional, Resena } from './types'
 import './Profesionales.css'
 
+function mensajeError(err: unknown, porDefecto: string): string {
+  if (err instanceof ErrorApi) {
+    return err.detalles?.length
+      ? `${err.message} ${err.detalles.map((detalle) => detalle.mensaje).join(' ')}`
+      : err.message
+  }
+  return porDefecto
+}
+
 export default function ProfesionalDetalle() {
   const { id } = useParams()
   const { usuario } = useAuth()
@@ -90,8 +99,8 @@ export default function ProfesionalDetalle() {
     event.preventDefault()
     setErrorSolicitud('')
     setConfirmacionSolicitud('')
-    if (!mensajeSolicitud.trim()) {
-      setErrorSolicitud('Contá brevemente qué necesitás.')
+    if (mensajeSolicitud.trim().length < 10) {
+      setErrorSolicitud('Contá brevemente qué necesitás (mínimo 10 caracteres).')
       return
     }
 
@@ -107,7 +116,7 @@ export default function ProfesionalDetalle() {
       setServicioId('')
       setMostrarSolicitud(false)
     } catch (err) {
-      setErrorSolicitud(err instanceof ErrorApi ? err.message : 'No pudimos enviar la solicitud.')
+      setErrorSolicitud(mensajeError(err, 'No pudimos enviar la solicitud.'))
     } finally {
       setEnviandoSolicitud(false)
     }
@@ -137,7 +146,7 @@ export default function ProfesionalDetalle() {
       setResenas(actualizado.resenas)
       setProfesional(actualizado.profesional)
     } catch (err) {
-      setErrorResena(err instanceof ErrorApi ? err.message : 'No pudimos publicar la reseña.')
+      setErrorResena(mensajeError(err, 'No pudimos publicar la reseña.'))
     } finally {
       setEnviandoResena(false)
     }
@@ -228,7 +237,7 @@ export default function ProfesionalDetalle() {
             )}
 
             {mostrarSolicitud && (
-              <form className="solicitud-formulario" onSubmit={enviarSolicitud}>
+              <form className="solicitud-formulario" onSubmit={enviarSolicitud} noValidate>
                 <h2>Contale qué necesitás</h2>
 
                 <label htmlFor="servicio-solicitud">Servicio (opcional)</label>
@@ -249,12 +258,20 @@ export default function ProfesionalDetalle() {
                 <textarea
                   id="mensaje-solicitud"
                   value={mensajeSolicitud}
-                  onChange={(event) => setMensajeSolicitud(event.target.value)}
+                  onChange={(event) => {
+                    setMensajeSolicitud(event.target.value)
+                    setErrorSolicitud('')
+                  }}
                   rows={4}
+                  minLength={10}
                   maxLength={1000}
                   required
+                  aria-describedby="mensaje-solicitud-ayuda"
                   placeholder="Ej.: necesito revisar una pérdida debajo de la pileta. ¿Tenés disponibilidad esta semana?"
                 />
+                <small className="solicitud-ayuda" id="mensaje-solicitud-ayuda">
+                  Escribí al menos 10 caracteres.
+                </small>
 
                 {errorSolicitud && (
                   <p className="form-error" role="alert">

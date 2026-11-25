@@ -648,6 +648,12 @@
   resize: vertical;
 }
 
+.solicitud-ayuda {
+  margin-top: -4px;
+  color: #527069;
+  font-size: 12px;
+}
+
 .solicitud-acciones {
   display: flex;
   align-items: center;
